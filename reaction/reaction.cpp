@@ -77,10 +77,13 @@ void setup() {
 
   setup_display();
 
+  // ASSIGN OUTPUT PINS. WAITING = PIN 2 (YELLOW), FIRED = PIN 3 (GREEN)
   pinMode(static_cast<int>(LightMode::Waiting), OUTPUT);
   pinMode(static_cast<int>(LightMode::Fired), OUTPUT);
+  // ASSIGN OUTPUT PIN (BUTTON PRESSED)
   pinMode(BUTTON_PIN, INPUT_PULLUP);
 
+  // START IT AT YELLOW LIGHT
   set_light(LightMode::Waiting);
 
   randomSeed(analogRead(A0));
@@ -93,15 +96,21 @@ void loop() {
   int state = digitalRead(BUTTON_PIN);
 
   if (current_light_mode == LightMode::Waiting) {
+    // IF WAITING, WAIT BETWEEN 1 and 5 SECONDS
     long delay_time = random(1000, 5000);
     delay(delay_time);
+    // AFTER DELAY, SET THE MODE TO FIRED
     current_light_mode = LightMode::Fired;
+    // SET LIGHT TO GREEN
     set_light(current_light_mode);
+    // START TIMER
     start_time = millis();
+    // CHANGE DISPLAY TO SHOW GO
     render_display(time_taken, current_light_mode == LightMode::Fired);
   }
 
   if (state == LOW && current_light_mode == LightMode::Fired) {
+    // TIME TAKEN IS CURRENT TIME - START TIME
     unsigned long local_time_taken = millis() - start_time;
     current_light_mode = LightMode::Waiting;
     set_light(current_light_mode);
